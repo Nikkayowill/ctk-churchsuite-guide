@@ -363,6 +363,7 @@ function renderFeedback() {
         <span>Feedback</span>
         <h2>Suggest an update or report a bug.</h2>
         <p>If something is unclear, missing, outdated, or not working on this site, send a quick note so the guide can stay useful.</p>
+        <p class="feedback-note">This goes to the private CTK feedback inbox. Please keep messages plain text.</p>
       </div>
       <form
         class="feedback-form"
@@ -390,21 +391,33 @@ function renderFeedback() {
           </label>
           <label>
             <span>Page or section</span>
-            <input name="page" type="text" placeholder="Example: 1.4 Add Notes and Tags" />
+            <input
+              name="page"
+              type="text"
+              maxlength="120"
+              placeholder="Example: 1.4 Add Notes and Tags"
+            />
           </label>
         </div>
         <label>
           <span>Message</span>
-          <textarea name="message" rows="5" minlength="8" required placeholder="What should be added, changed, or fixed?"></textarea>
+          <textarea
+            name="message"
+            rows="5"
+            minlength="8"
+            maxlength="2000"
+            required
+            placeholder="What should be added, changed, or fixed?"
+          ></textarea>
         </label>
         <div class="form-row">
           <label>
             <span>Name</span>
-            <input name="name" type="text" autocomplete="name" placeholder="Optional" />
+            <input name="name" type="text" maxlength="80" autocomplete="name" placeholder="Optional" />
           </label>
           <label>
             <span>Email</span>
-            <input name="email" type="email" autocomplete="email" placeholder="Optional" />
+            <input name="email" type="email" maxlength="254" autocomplete="email" placeholder="Optional" />
           </label>
         </div>
         <div class="feedback-actions">
@@ -610,12 +623,72 @@ function setupFeedbackForm() {
   const status = form.querySelector(".feedback-status");
   const submitButton = form.querySelector('button[type="submit"]');
   const pageUrlInput = form.querySelector('input[name="page-url"]');
+  const fieldLimits = {
+    page: 120,
+    name: 80,
+    email: 254,
+    message: 2000,
+  };
+  const plainTextPattern = /<\/?[a-z][\s\S]*?>|javascript:|data:text\/html|on\w+\s*=/i;
+
+  const normalizeSingleLine = (value) => value.replace(/\s+/g, " ").trim();
+  const normalizeMessage = (value) => value.replace(/\r\n/g, "\n").trim();
+
+  const rejectIfInvalid = (fieldName, value) => {
+    if (value.length > fieldLimits[fieldName]) {
+      return `Please keep ${fieldName} under ${fieldLimits[fieldName]} characters.`;
+    }
+
+    if (plainTextPattern.test(value)) {
+      return "Please use plain text only and remove any HTML or script-like content.";
+    }
+
+    return "";
+  };
+
+  const sanitizeForm = () => {
+    const kind = form.querySelector('select[name="kind"]');
+    const page = form.querySelector('input[name="page"]');
+    const message = form.querySelector('textarea[name="message"]');
+    const name = form.querySelector('input[name="name"]');
+    const email = form.querySelector('input[name="email"]');
+
+    page.value = normalizeSingleLine(page.value);
+    name.value = normalizeSingleLine(name.value);
+    email.value = normalizeSingleLine(email.value);
+    message.value = normalizeMessage(message.value);
+
+    const fieldErrors = [
+      rejectIfInvalid("page", page.value),
+      rejectIfInvalid("name", name.value),
+      rejectIfInvalid("email", email.value),
+      rejectIfInvalid("message", message.value),
+    ].filter(Boolean);
+
+    if (!kind.value) {
+      fieldErrors.unshift("Please choose a feedback type.");
+    }
+
+    if (message.value.length < 8) {
+      fieldErrors.unshift("Please enter at least 8 characters in the message.");
+    }
+
+    return fieldErrors[0] || "";
+  };
 
   pageUrlInput.value = window.location.href;
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     pageUrlInput.value = window.location.href;
+
+    const validationMessage = sanitizeForm();
+
+    if (validationMessage) {
+      status.textContent = validationMessage;
+      return;
+    }
+
     submitButton.disabled = true;
     status.textContent = "Sending...";
 

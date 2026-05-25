@@ -994,6 +994,12 @@ li {
   gap: 16px;
 }
 
+.feedback-note {
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .form-row {
   display: grid;
   gap: 14px;

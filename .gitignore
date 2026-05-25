@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.scratch/
+.env
+*.log
+public/downloads/*.docx
+.DS_Store
+Thumbs.db

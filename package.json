@@ -1,0 +1,16 @@
+{
+  "name": "ctk-churchsuite-guide",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "prepare:assets": "node scripts/prepare-assets.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.2",
+    "vite": "^6.3.5"
+  }
+}

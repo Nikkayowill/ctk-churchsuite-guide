@@ -1046,6 +1046,7 @@ li {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
 }
 
 .feedback-actions .button {
@@ -1061,6 +1062,49 @@ li {
   color: var(--green);
   font-size: 14px;
   font-weight: 760;
+}
+
+.feedback-form [data-fs-success],
+.feedback-form [data-fs-error] {
+  display: none;
+  min-height: 1.25em;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.feedback-form [data-fs-success][data-fs-active] {
+  display: block;
+  color: var(--green);
+}
+
+.feedback-form [data-fs-error][data-fs-active] {
+  display: block;
+  color: var(--red);
+}
+
+.feedback-form [data-fs-error="kind"],
+.feedback-form [data-fs-error="page"],
+.feedback-form [data-fs-error="message"],
+.feedback-form [data-fs-error="name"],
+.feedback-form [data-fs-error="email"] {
+  display: none;
+  min-height: 1.25em;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.feedback-form [data-fs-error="kind"][data-fs-active],
+.feedback-form [data-fs-error="page"][data-fs-active],
+.feedback-form [data-fs-error="message"][data-fs-active],
+.feedback-form [data-fs-error="name"][data-fs-active],
+.feedback-form [data-fs-error="email"][data-fs-active] {
+  display: block;
+}
+
+.feedback-status--error {
+  color: var(--red);
 }
 
 .honeypot {

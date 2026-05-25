@@ -15,5 +15,8 @@
     "sharp": "^0.34.2",
     "vite": "^6.3.5",
     "wrangler": "^4.94.0"
+  },
+  "dependencies": {
+    "@formspree/ajax": "^1.1.5"
   }
 }

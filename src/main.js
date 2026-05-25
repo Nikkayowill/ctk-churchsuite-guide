@@ -1,3 +1,4 @@
+import { initForm } from "@formspree/ajax";
 import { assetPath, guide, screenshots } from "./content.js";
 
 const root = document.querySelector("#app");
@@ -362,17 +363,18 @@ function renderFeedback() {
         <span>Feedback</span>
         <h2>Suggest an update or report a bug.</h2>
         <p>If something is unclear, missing, outdated, or not working on this site, send a quick note so the guide can stay useful.</p>
-        <p class="feedback-note">This opens your email app and pre-fills a message to the CTK inbox.</p>
+        <p class="feedback-note">Leave feedback to help make the documentation better.</p>
       </div>
       <form
         class="feedback-form"
+        id="feedback-form"
         method="POST"
       >
         <input type="hidden" name="page-url" value="" />
         <div class="form-row">
           <label>
             <span>Feedback type</span>
-            <select name="kind" required>
+            <select name="kind" required data-fs-field>
               <option value="">Choose one</option>
               <option value="Suggestion">Suggestion</option>
               <option value="Bug report">Bug report</option>
@@ -380,6 +382,7 @@ function renderFeedback() {
               <option value="Screenshot issue">Screenshot issue</option>
               <option value="Correction">Correction</option>
             </select>
+            <span data-fs-error="kind"></span>
           </label>
           <label>
             <span>Page or section</span>
@@ -388,7 +391,9 @@ function renderFeedback() {
               type="text"
               maxlength="120"
               placeholder="Example: 1.4 Add Notes and Tags"
+              data-fs-field
             />
+            <span data-fs-error="page"></span>
           </label>
         </div>
         <label>
@@ -400,21 +405,26 @@ function renderFeedback() {
             maxlength="2000"
             required
             placeholder="What should be added, changed, or fixed?"
+            data-fs-field
           ></textarea>
+          <span data-fs-error="message"></span>
         </label>
         <div class="form-row">
           <label>
             <span>Name</span>
-            <input name="name" type="text" maxlength="80" autocomplete="name" placeholder="Optional" />
+            <input name="name" type="text" maxlength="80" autocomplete="name" placeholder="Optional" data-fs-field />
+            <span data-fs-error="name"></span>
           </label>
           <label>
             <span>Email</span>
-            <input name="email" type="email" maxlength="254" autocomplete="email" placeholder="Optional" />
+            <input name="email" type="email" maxlength="254" autocomplete="email" placeholder="Optional" data-fs-field />
+            <span data-fs-error="email"></span>
           </label>
         </div>
         <div class="feedback-actions">
-          <button class="button primary" type="submit">Open email app</button>
-          <p class="feedback-status" role="status" aria-live="polite"></p>
+          <button class="button primary" type="submit" data-fs-submit-btn>Send feedback</button>
+          <p class="feedback-status" data-fs-success role="status" aria-live="polite">Submitted</p>
+          <p class="feedback-status feedback-status--error" data-fs-error role="alert"></p>
         </div>
       </form>
     </section>
@@ -612,61 +622,10 @@ function setupFeedbackForm() {
     return;
   }
 
-  const status = form.querySelector(".feedback-status");
-  const submitButton = form.querySelector('button[type="submit"]');
   const pageUrlInput = form.querySelector('input[name="page-url"]');
-  const normalizeSingleLine = (value) => value.replace(/\s+/g, " ").trim();
-  const normalizeMessage = (value) => value.replace(/\r\n/g, "\n").trim();
-
-  const buildMailBody = () => {
-    const kind = normalizeSingleLine(form.querySelector('select[name="kind"]').value);
-    const page = normalizeSingleLine(form.querySelector('input[name="page"]').value);
-    const message = normalizeMessage(form.querySelector('textarea[name="message"]').value);
-    const name = normalizeSingleLine(form.querySelector('input[name="name"]').value);
-    const email = normalizeSingleLine(form.querySelector('input[name="email"]').value);
-
-    return [
-      `Feedback type: ${kind || "(not provided)"}`,
-      `Page or section: ${page || "(not provided)"}`,
-      `Name: ${name || "(optional)"}`,
-      `Email: ${email || "(optional)"}`,
-      `Page URL: ${window.location.href}`,
-      "",
-      message,
-    ].join("\n");
-  };
 
   pageUrlInput.value = window.location.href;
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const kind = form.querySelector('select[name="kind"]');
-    const messageField = form.querySelector('textarea[name="message"]');
-
-    if (!kind.value) {
-      status.textContent = "Please choose a feedback type.";
-      return;
-    }
-
-    if (messageField.value.trim().length < 8) {
-      status.textContent = "Please enter at least 8 characters in the message.";
-      return;
-    }
-
-    pageUrlInput.value = window.location.href;
-    const subject = encodeURIComponent(`CTK ChurchSuite guide feedback: ${kind.value}`);
-    const body = encodeURIComponent(buildMailBody());
-
-    submitButton.disabled = true;
-    status.textContent = "Opening your email app...";
-
-    window.location.href = `mailto:nikkayo17@hotmail.com?subject=${subject}&body=${body}`;
-    window.setTimeout(() => {
-      submitButton.disabled = false;
-      status.textContent = "If your email app did not open, copy the feedback and email it to nikkayo17@hotmail.com.";
-    }, 500);
-  });
+  initForm({ formElement: "#feedback-form", formId: "mvzybezd" });
 }
 
 function scrollToInitialHash() {

@@ -623,6 +623,7 @@ function setupFeedbackForm() {
   const status = form.querySelector(".feedback-status");
   const submitButton = form.querySelector('button[type="submit"]');
   const pageUrlInput = form.querySelector('input[name="page-url"]');
+  const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
   const fieldLimits = {
     page: 120,
     name: 80,
@@ -682,6 +683,11 @@ function setupFeedbackForm() {
     event.preventDefault();
     pageUrlInput.value = window.location.href;
 
+    if (isLocalhost) {
+      status.textContent = "This form only submits on the deployed Netlify site, not the local Vite server.";
+      return;
+    }
+
     const validationMessage = sanitizeForm();
 
     if (validationMessage) {
@@ -703,14 +709,18 @@ function setupFeedbackForm() {
       });
 
       if (!response.ok) {
-        throw new Error("Feedback submission failed");
+        if (response.status === 404) {
+          throw new Error("Netlify did not recognize the form submission. Redeploy the live site so the hidden form markup is included.");
+        }
+
+        throw new Error(`Netlify returned ${response.status}.`);
       }
 
       form.reset();
       pageUrlInput.value = window.location.href;
       status.textContent = "Thank you. Your feedback was sent.";
-    } catch {
-      status.textContent = "Could not send feedback. Please try again.";
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : "Could not send feedback. Please try again.";
     } finally {
       submitButton.disabled = false;
     }

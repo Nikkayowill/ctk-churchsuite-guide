@@ -24,4 +24,4 @@ npm run build
 
 ## Deploy
 
-Netlify builds `dist` from the `master` branch and deploys it automatically after pushes.
+GitHub Pages builds `dist` from the `master` branch via the workflow in `.github/workflows/deploy.yml`.

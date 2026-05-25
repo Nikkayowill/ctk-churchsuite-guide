@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1",
-    "prepare:assets": "node scripts/prepare-assets.mjs"
+    "preview": "npm run build && wrangler dev",
+    "prepare:assets": "node scripts/prepare-assets.mjs",
+    "deploy": "npm run build && wrangler deploy"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.38.0",
     "sharp": "^0.34.2",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "wrangler": "^4.94.0"
   }
 }

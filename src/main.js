@@ -362,16 +362,12 @@ function renderFeedback() {
         <span>Feedback</span>
         <h2>Suggest an update or report a bug.</h2>
         <p>If something is unclear, missing, outdated, or not working on this site, send a quick note so the guide can stay useful.</p>
-        <p class="feedback-note">This sends to the CTK feedback inbox. Please keep messages plain text.</p>
+        <p class="feedback-note">This opens your email app and pre-fills a message to the CTK inbox.</p>
       </div>
       <form
         class="feedback-form"
-        action="https://formsubmit.co/nikkayo17@hotmail.com"
         method="POST"
       >
-        <input type="hidden" name="_subject" value="CTK ChurchSuite guide feedback" />
-        <input type="hidden" name="_template" value="table" />
-        <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="page-url" value="" />
         <div class="form-row">
           <label>
@@ -417,7 +413,7 @@ function renderFeedback() {
           </label>
         </div>
         <div class="feedback-actions">
-          <button class="button primary" type="submit">Send feedback</button>
+          <button class="button primary" type="submit">Open email app</button>
           <p class="feedback-status" role="status" aria-live="polite"></p>
         </div>
       </form>
@@ -619,73 +615,57 @@ function setupFeedbackForm() {
   const status = form.querySelector(".feedback-status");
   const submitButton = form.querySelector('button[type="submit"]');
   const pageUrlInput = form.querySelector('input[name="page-url"]');
-  const fieldLimits = {
-    page: 120,
-    name: 80,
-    email: 254,
-    message: 2000,
-  };
-  const plainTextPattern = /<\/?[a-z][\s\S]*?>|javascript:|data:text\/html|on\w+\s*=/i;
-
   const normalizeSingleLine = (value) => value.replace(/\s+/g, " ").trim();
   const normalizeMessage = (value) => value.replace(/\r\n/g, "\n").trim();
 
-  const rejectIfInvalid = (fieldName, value) => {
-    if (value.length > fieldLimits[fieldName]) {
-      return `Please keep ${fieldName} under ${fieldLimits[fieldName]} characters.`;
-    }
+  const buildMailBody = () => {
+    const kind = normalizeSingleLine(form.querySelector('select[name="kind"]').value);
+    const page = normalizeSingleLine(form.querySelector('input[name="page"]').value);
+    const message = normalizeMessage(form.querySelector('textarea[name="message"]').value);
+    const name = normalizeSingleLine(form.querySelector('input[name="name"]').value);
+    const email = normalizeSingleLine(form.querySelector('input[name="email"]').value);
 
-    if (plainTextPattern.test(value)) {
-      return "Please use plain text only and remove any HTML or script-like content.";
-    }
-
-    return "";
-  };
-
-  const sanitizeForm = () => {
-    const kind = form.querySelector('select[name="kind"]');
-    const page = form.querySelector('input[name="page"]');
-    const message = form.querySelector('textarea[name="message"]');
-    const name = form.querySelector('input[name="name"]');
-    const email = form.querySelector('input[name="email"]');
-
-    page.value = normalizeSingleLine(page.value);
-    name.value = normalizeSingleLine(name.value);
-    email.value = normalizeSingleLine(email.value);
-    message.value = normalizeMessage(message.value);
-
-    const fieldErrors = [
-      rejectIfInvalid("page", page.value),
-      rejectIfInvalid("name", name.value),
-      rejectIfInvalid("email", email.value),
-      rejectIfInvalid("message", message.value),
-    ].filter(Boolean);
-
-    if (!kind.value) {
-      fieldErrors.unshift("Please choose a feedback type.");
-    }
-
-    if (message.value.length < 8) {
-      fieldErrors.unshift("Please enter at least 8 characters in the message.");
-    }
-
-    return fieldErrors[0] || "";
+    return [
+      `Feedback type: ${kind || "(not provided)"}`,
+      `Page or section: ${page || "(not provided)"}`,
+      `Name: ${name || "(optional)"}`,
+      `Email: ${email || "(optional)"}`,
+      `Page URL: ${window.location.href}`,
+      "",
+      message,
+    ].join("\n");
   };
 
   pageUrlInput.value = window.location.href;
 
   form.addEventListener("submit", async (event) => {
-    const validationMessage = sanitizeForm();
+    event.preventDefault();
 
-    if (validationMessage) {
-      event.preventDefault();
-      status.textContent = validationMessage;
+    const kind = form.querySelector('select[name="kind"]');
+    const messageField = form.querySelector('textarea[name="message"]');
+
+    if (!kind.value) {
+      status.textContent = "Please choose a feedback type.";
+      return;
+    }
+
+    if (messageField.value.trim().length < 8) {
+      status.textContent = "Please enter at least 8 characters in the message.";
       return;
     }
 
     pageUrlInput.value = window.location.href;
-    status.textContent = "Sending...";
+    const subject = encodeURIComponent(`CTK ChurchSuite guide feedback: ${kind.value}`);
+    const body = encodeURIComponent(buildMailBody());
+
     submitButton.disabled = true;
+    status.textContent = "Opening your email app...";
+
+    window.location.href = `mailto:nikkayo17@hotmail.com?subject=${subject}&body=${body}`;
+    window.setTimeout(() => {
+      submitButton.disabled = false;
+      status.textContent = "If your email app did not open, copy the feedback and email it to nikkayo17@hotmail.com.";
+    }, 500);
   });
 }
 

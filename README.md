@@ -16,4 +16,4 @@ npm run dev
 npm run build
 ```
 
-The GitHub Pages workflow builds `dist` and deploys it on pushes to `main`.
+Netlify builds `dist` from the `master` branch and deploys it automatically after pushes.

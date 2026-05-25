@@ -228,6 +228,7 @@ function renderSidebar() {
           .join("")}
         <a href="#quick-reference" data-nav-link="quick-reference">Quick Reference</a>
         <a href="#official-help" data-nav-link="official-help">Official Help</a>
+        <a href="#feedback" data-nav-link="feedback">Feedback</a>
       </nav>
     </aside>
   `;
@@ -243,6 +244,7 @@ function renderMobilePills() {
         .join("")}
       <a href="#quick-reference">Quick Reference</a>
       <a href="#official-help">Official Help</a>
+      <a href="#feedback">Feedback</a>
     </nav>
   `;
 }
@@ -354,6 +356,66 @@ function renderHelpLinks() {
   `;
 }
 
+function renderFeedback() {
+  return `
+    <section class="feedback shell" id="feedback" data-anchor-section>
+      <div class="section-heading compact">
+        <span>Feedback</span>
+        <h2>Suggest an update or report a bug.</h2>
+        <p>If something is unclear, missing, outdated, or not working on this site, send a quick note so the guide can stay useful.</p>
+      </div>
+      <form
+        class="feedback-form"
+        name="site-feedback"
+        method="POST"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
+      >
+        <input type="hidden" name="form-name" value="site-feedback" />
+        <input type="hidden" name="page-url" value="" />
+        <p class="honeypot">
+          <label>Do not fill this out <input name="bot-field" /></label>
+        </p>
+        <div class="form-row">
+          <label>
+            <span>Feedback type</span>
+            <select name="kind" required>
+              <option value="">Choose one</option>
+              <option value="Suggestion">Suggestion</option>
+              <option value="Bug report">Bug report</option>
+              <option value="Missing section">Missing section</option>
+              <option value="Screenshot issue">Screenshot issue</option>
+              <option value="Correction">Correction</option>
+            </select>
+          </label>
+          <label>
+            <span>Page or section</span>
+            <input name="page" type="text" placeholder="Example: 1.4 Add Notes and Tags" />
+          </label>
+        </div>
+        <label>
+          <span>Message</span>
+          <textarea name="message" rows="5" minlength="8" required placeholder="What should be added, changed, or fixed?"></textarea>
+        </label>
+        <div class="form-row">
+          <label>
+            <span>Name</span>
+            <input name="name" type="text" autocomplete="name" placeholder="Optional" />
+          </label>
+          <label>
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" placeholder="Optional" />
+          </label>
+        </div>
+        <div class="feedback-actions">
+          <button class="button primary" type="submit">Send feedback</button>
+          <p class="feedback-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+  `;
+}
+
 function renderHero() {
   return `
     <section class="hero" id="top">
@@ -397,6 +459,7 @@ function renderHeader() {
           <a href="#address-book">Address Book</a>
           <a href="#ministries-rosters">Rosters</a>
           <a href="#staff-situations">Situations</a>
+          <a href="#feedback">Feedback</a>
           <a class="download-link" href="${guide.downloadHref}" download>Download PDF</a>
         </div>
       </nav>
@@ -423,6 +486,7 @@ function renderApp() {
       ${renderQuickReference()}
       ${renderReminders()}
       ${renderHelpLinks()}
+      ${renderFeedback()}
     </main>
     <footer class="site-footer">
       <div class="shell">
@@ -536,6 +600,50 @@ function setupBackToTop() {
   updateVisibility();
 }
 
+function setupFeedbackForm() {
+  const form = document.querySelector(".feedback-form");
+
+  if (!form) {
+    return;
+  }
+
+  const status = form.querySelector(".feedback-status");
+  const submitButton = form.querySelector('button[type="submit"]');
+  const pageUrlInput = form.querySelector('input[name="page-url"]');
+
+  pageUrlInput.value = window.location.href;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    pageUrlInput.value = window.location.href;
+    submitButton.disabled = true;
+    status.textContent = "Sending...";
+
+    try {
+      const formData = new FormData(form);
+      const body = new URLSearchParams(formData).toString();
+
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+
+      if (!response.ok) {
+        throw new Error("Feedback submission failed");
+      }
+
+      form.reset();
+      pageUrlInput.value = window.location.href;
+      status.textContent = "Thank you. Your feedback was sent.";
+    } catch {
+      status.textContent = "Could not send feedback. Please try again.";
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+}
+
 function scrollToInitialHash() {
   if (!window.location.hash) {
     return;
@@ -559,5 +667,6 @@ renderApp();
 setupImageViewer();
 setupActiveNavigation();
 setupBackToTop();
+setupFeedbackForm();
 scrollToInitialHash();
 window.addEventListener("hashchange", scrollToInitialHash);

@@ -1,4 +1,3 @@
-import "./styles.css";
 import { assetPath, guide, screenshots } from "./content.js";
 
 const root = document.querySelector("#app");

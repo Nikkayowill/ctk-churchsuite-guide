@@ -2,6 +2,7 @@ import { initForm } from "@formspree/ajax";
 import { assetPath, guide, screenshots } from "./content.js";
 
 const root = document.querySelector("#app");
+const themeStorageKey = "ctk-guide-theme";
 
 function escapeHtml(value) {
   return String(value)
@@ -441,6 +442,7 @@ function renderHero() {
           <p>${escapeHtml(guide.subtitle)}</p>
           <div class="hero-actions">
             <a class="button primary" href="${guide.downloadHref}" download>Download the PDF version</a>
+            <a class="button secondary hero-feedback" href="#feedback">Give feedback</a>
           </div>
           <dl class="hero-stats" aria-label="Guide summary">
             ${guide.stats
@@ -475,7 +477,12 @@ function renderHeader() {
           <a href="#ministries-rosters">Rosters</a>
           <a href="#staff-situations">Situations</a>
           <a href="#feedback">Feedback</a>
-          <a href="#feedback" data-nav-link="feedback">Help improve docs</a>
+          <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+            <span class="theme-toggle__track" aria-hidden="true">
+              <span class="theme-toggle__thumb"></span>
+            </span>
+            <span class="theme-toggle__text">Dark</span>
+          </button>
           <a class="download-link" href="${guide.downloadHref}" download>Download PDF</a>
         </div>
       </nav>
@@ -626,7 +633,55 @@ function setupFeedbackForm() {
   const pageUrlInput = form.querySelector('input[name="page-url"]');
 
   pageUrlInput.value = window.location.href;
+  form.addEventListener(
+    "submit",
+    () => {
+      pageUrlInput.value = window.location.href;
+    },
+    { capture: true },
+  );
   initForm({ formElement: "#feedback-form", formId: "mvzybezd" });
+}
+
+function currentTheme() {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+
+  document.querySelectorAll(".theme-toggle").forEach((button) => {
+    button.setAttribute("aria-pressed", String(isDark));
+    button.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode",
+    );
+    button.querySelector(".theme-toggle__text").textContent = isDark ? "Light" : "Dark";
+  });
+}
+
+function setupThemeToggle() {
+  const savedTheme = (() => {
+    try {
+      return localStorage.getItem(themeStorageKey);
+    } catch {
+      return null;
+    }
+  })();
+
+  applyTheme(savedTheme === "dark" ? "dark" : "light");
+
+  document.querySelectorAll(".theme-toggle").forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextTheme = currentTheme() === "dark" ? "light" : "dark";
+      applyTheme(nextTheme);
+
+      try {
+        localStorage.setItem(themeStorageKey, nextTheme);
+      } catch {}
+    });
+  });
 }
 
 function scrollToInitialHash() {
@@ -653,5 +708,6 @@ setupImageViewer();
 setupActiveNavigation();
 setupBackToTop();
 setupFeedbackForm();
+setupThemeToggle();
 scrollToInitialHash();
 window.addEventListener("hashchange", scrollToInitialHash);

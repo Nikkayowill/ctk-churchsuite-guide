@@ -8,6 +8,14 @@
       content="A simplified ChurchSuite staff guide for Christ the King Parish Dartmouth."
     />
     <title>ChurchSuite Simplified | CTK Dartmouth</title>
+    <script>
+      try {
+        const theme = localStorage.getItem("ctk-guide-theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch {}
+    </script>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>

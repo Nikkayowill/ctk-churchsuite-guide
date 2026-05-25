@@ -417,7 +417,7 @@ function renderFeedback() {
           </label>
           <label>
             <span>Email</span>
-            <input name="email" type="email" maxlength="254" autocomplete="email" placeholder="Optional" data-fs-field />
+            <input name="email" type="email" maxlength="254" autocomplete="email" placeholder="Optional, needed if you want a reply" data-fs-field />
             <span data-fs-error="email"></span>
           </label>
         </div>

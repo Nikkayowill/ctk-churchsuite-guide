@@ -8,6 +8,10 @@ This site presents the ChurchSuite workflow guide in a cleaner web format with s
 
 It also includes a private feedback form for staff to suggest corrections, missing sections, or bug reports. Submissions are sent in the background through Formspree, show a simple Submitted message on success, and are not shown publicly on the page.
 
+## Feedback
+
+The feedback form uses Formspree form ID `mvzybezd`. Submissions go to the Formspree inbox for that form. Visitors cannot see other submissions. The site owner can reply only when the sender provides an email address.
+
 ## Local Development
 
 ```bash
@@ -24,4 +28,8 @@ npm run build
 
 ## Deploy
 
-GitHub Pages builds `dist` from the `master` branch via the workflow in `.github/workflows/deploy.yml`.
+Cloudflare builds and hosts the site. Use the Cloudflare Pages project connected to this repository, or deploy manually with:
+
+```bash
+npm run deploy
+```

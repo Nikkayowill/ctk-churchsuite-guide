@@ -475,6 +475,7 @@ function renderHeader() {
           <a href="#ministries-rosters">Rosters</a>
           <a href="#staff-situations">Situations</a>
           <a href="#feedback">Feedback</a>
+          <a href="#feedback" data-nav-link="feedback">Help improve docs</a>
           <a class="download-link" href="${guide.downloadHref}" download>Download PDF</a>
         </div>
       </nav>

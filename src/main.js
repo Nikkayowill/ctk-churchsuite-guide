@@ -362,20 +362,17 @@ function renderFeedback() {
         <span>Feedback</span>
         <h2>Suggest an update or report a bug.</h2>
         <p>If something is unclear, missing, outdated, or not working on this site, send a quick note so the guide can stay useful.</p>
-        <p class="feedback-note">This goes to the private CTK feedback inbox. Please keep messages plain text.</p>
+        <p class="feedback-note">This sends to the CTK feedback inbox. Please keep messages plain text.</p>
       </div>
       <form
         class="feedback-form"
-        name="site-feedback"
+        action="https://formsubmit.co/nikkayo17@hotmail.com"
         method="POST"
-        data-netlify="true"
-        data-netlify-honeypot="bot-field"
       >
-        <input type="hidden" name="form-name" value="site-feedback" />
+        <input type="hidden" name="_subject" value="CTK ChurchSuite guide feedback" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="page-url" value="" />
-        <p class="honeypot">
-          <label>Do not fill this out <input name="bot-field" /></label>
-        </p>
         <div class="form-row">
           <label>
             <span>Feedback type</span>
@@ -622,7 +619,6 @@ function setupFeedbackForm() {
   const status = form.querySelector(".feedback-status");
   const submitButton = form.querySelector('button[type="submit"]');
   const pageUrlInput = form.querySelector('input[name="page-url"]');
-  const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
   const fieldLimits = {
     page: 120,
     name: 80,
@@ -679,50 +675,17 @@ function setupFeedbackForm() {
   pageUrlInput.value = window.location.href;
 
   form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    pageUrlInput.value = window.location.href;
-
-    if (isLocalhost) {
-      status.textContent = "This form only submits on the deployed Netlify site, not the local Vite server.";
-      return;
-    }
-
     const validationMessage = sanitizeForm();
 
     if (validationMessage) {
+      event.preventDefault();
       status.textContent = validationMessage;
       return;
     }
 
-    submitButton.disabled = true;
+    pageUrlInput.value = window.location.href;
     status.textContent = "Sending...";
-
-    try {
-      const formData = new FormData(form);
-      const body = new URLSearchParams(formData).toString();
-
-      const response = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body,
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error("Netlify did not recognize the form submission. Redeploy the live site so the hidden form markup is included.");
-        }
-
-        throw new Error(`Netlify returned ${response.status}.`);
-      }
-
-      form.reset();
-      pageUrlInput.value = window.location.href;
-      status.textContent = "Thank you. Your feedback was sent.";
-    } catch (error) {
-      status.textContent = error instanceof Error ? error.message : "Could not send feedback. Please try again.";
-    } finally {
-      submitButton.disabled = false;
-    }
+    submitButton.disabled = true;
   });
 }
 

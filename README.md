@@ -6,7 +6,7 @@ A Vite-built web version of the CTK Dartmouth ChurchSuite staff guide.
 
 This site presents the ChurchSuite workflow guide in a cleaner web format with screenshots, section links, and a PDF download.
 
-It also includes a private feedback form for staff to suggest corrections, missing sections, or bug reports. Submissions go to the site's Netlify Forms inbox and are not shown publicly on the page.
+It also includes a private feedback form for staff to suggest corrections, missing sections, or bug reports. Submissions are sent by email through FormSubmit and are not shown publicly on the page.
 
 ## Local Development
 

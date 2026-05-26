@@ -22,8 +22,8 @@
   --header-bg: rgba(255, 255, 255, 0.94);
   --hero-bg: #fff;
   --hero-overlay:
-    linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 48%, rgba(255, 255, 255, 0.68) 100%),
-    linear-gradient(0deg, rgba(18, 102, 79, 0.08), rgba(255, 255, 255, 0));
+    linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.94) 45%, rgba(255, 255, 255, 0.42) 100%),
+    linear-gradient(0deg, rgba(18, 102, 79, 0.06), rgba(255, 255, 255, 0));
   --hero-text: #4c5360;
   --chip-bg: rgba(255, 255, 255, 0.78);
   --shadow: 0 18px 54px rgba(18, 24, 38, 0.08);
@@ -331,9 +331,10 @@ li {
 
 .hero::before {
   background-image: var(--hero-image);
-  background-position: center top;
+  background-position: center center;
+  background-repeat: no-repeat;
   background-size: cover;
-  opacity: 0.2;
+  opacity: 0.46;
 }
 
 .hero::after {

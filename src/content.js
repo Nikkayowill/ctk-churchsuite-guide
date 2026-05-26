@@ -173,7 +173,7 @@ export const guide = {
   version: "V1",
   downloadHref: assetPath("downloads/CTK-ChurchSuite-Simplified-Staff-Guide-V1.pdf"),
   logoHref: assetPath("images/ctk-logo.webp"),
-  heroImage: screenshots["addressbook-forms-viewresponse"].src,
+  heroImage: assetPath("images/st-vincent-de-paul-banner.webp"),
   stats: [
     { value: "32", label: "source pages" },
     { value: "27", label: "screenshots" },

@@ -435,6 +435,14 @@ function renderFeedback() {
 function renderHero() {
   return `
     <section class="hero" id="top">
+      <img
+        class="hero-media"
+        src="${escapeHtml(guide.heroImage)}"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        fetchpriority="high"
+      >
       <div class="hero-inner shell">
         <div class="hero-copy">
           <span class="eyebrow">${escapeHtml(guide.version)} staff reference</span>
@@ -491,8 +499,6 @@ function renderHeader() {
 }
 
 function renderApp() {
-  document.documentElement.style.setProperty("--hero-image", `url("${guide.heroImage}")`);
-
   root.innerHTML = `
     <a class="skip-link" href="#guide">Skip to guide</a>
     ${renderHeader()}

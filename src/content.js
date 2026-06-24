@@ -621,7 +621,7 @@ export const guide = {
             },
             "Click Add Team or the option to manage teams.",
             {
-              text: "Enter the team's name.",
+              text: "Enter the team's name. Include the mass time in the name, since each Mass will have a different team name. For example: Reader 10am.",
               images: [
                 {
                   key: "ministries-addteammember",
@@ -683,6 +683,7 @@ export const guide = {
             "Set how often the roster repeats.",
             "Review the clash setting. This helps ChurchSuite warn staff if a person is already scheduled to serve somewhere else at the same time.",
             "Save the roster.",
+            "To add people under the date, click the +Add to date button and add the people who should be scheduled for that date.",
             {
               text: "Add roster members or teams if the roster needs named people assigned.",
               images: [
